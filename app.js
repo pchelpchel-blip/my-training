@@ -356,4 +356,7 @@ document.addEventListener('change',async e=>{let t=e.target;if(t.id==='session-d
   save();
 }
 if(k==='done')render();return}if(t.id==='import-file'&&t.files[0]){try{let data=JSON.parse(await t.files[0].text());if(!data||typeof data!=='object'||!data.logs||!Array.isArray(data.weights)||!data.profile)throw Error();if(confirm('Замінити поточні дані резервною копією?')){state=data;save();render()}}catch{alert('Не вдалося прочитати резервну копію')}}});
-render();if('serviceWorker'in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});
+render();
+if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+  navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' }).catch(() => {});
+}

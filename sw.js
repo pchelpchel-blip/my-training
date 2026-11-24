@@ -1,8 +1,19 @@
-const CACHE = 'my-training-v5';
-const ASSETS = ['./', './index.html', './style.css', './app.js', './manifest.webmanifest', './icon-192.png', './icon-512.png'];
+const VERSION = 6;
+const CACHE = `my-training-v${VERSION}`;
+const SHELL = './index.html';
+const ASSETS = [
+  SHELL,
+  `./style.css?v=${VERSION}`,
+  `./app.js?v=${VERSION}`,
+  './manifest.webmanifest',
+  './icon-192.png',
+  './icon-512.png'
+];
+const shellPaths = ['./', SHELL].map(path => new URL(path, self.registration.scope).pathname);
 
 self.addEventListener('install', event => {
-  event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(ASSETS)).then(() => self.skipWaiting()));
+  const requests = ASSETS.map(path => new Request(path, { cache: 'reload' }));
+  event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(requests)).then(() => self.skipWaiting()));
 });
 
 self.addEventListener('activate', event => {
@@ -11,9 +22,29 @@ self.addEventListener('activate', event => {
   )).then(() => self.clients.claim()));
 });
 
+async function loadShell(request) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 4000);
+  try {
+    const response = await fetch(request, { cache: 'no-cache', signal: controller.signal });
+    if (response.status < 500) return response;
+  } catch {
+    // Use the precached version when the network is unavailable.
+  } finally {
+    clearTimeout(timeout);
+  }
+  const cache = await caches.open(CACHE);
+  return (await cache.match(SHELL)) ?? Response.error();
+}
+
 self.addEventListener('fetch', event => {
   const request = event.request;
-  if (request.method !== 'GET' || new URL(request.url).origin !== self.location.origin) return;
+  const url = new URL(request.url);
+  if (request.method !== 'GET' || url.origin !== self.location.origin) return;
+  if (request.mode === 'navigate' && shellPaths.includes(url.pathname)) {
+    event.respondWith(loadShell(request));
+    return;
+  }
   event.respondWith(caches.open(CACHE).then(cache =>
     cache.match(request).then(response => response || fetch(request))
   ));
