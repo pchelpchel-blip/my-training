@@ -122,3 +122,42 @@ button:focus-visible, input:focus-visible {
 .technique-steps p { margin: 4px 0 0; color: #d3e2df; }
 .technique-demo { display: inline-flex; align-items: center; min-height: 44px; margin-top: 8px; }
 .guided-technique { padding: 4px 12px; border: 1px solid var(--line); border-radius: 15px; }
+
+.current-set {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  padding: 8px 12px;
+  border: 1px solid #52796c;
+  border-radius: 13px;
+  background: #203c35;
+  color: var(--mint);
+}
+.current-set span { font-size: 14px; font-weight: 600; }
+.current-set strong { font-size: clamp(21px, 6vw, 27px); }
+.rest-card { background: #203c35; padding: 12px; }
+.guided-controls .rest-card { padding: 12px; }
+.rest-title { color: var(--mint); }
+.rest-card #timer-count { font-size: 30px; line-height: 1.1; }
+.rest-transition {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin: 9px 0;
+}
+.rest-transition p {
+  display: grid;
+  align-content: start;
+  gap: 5px;
+  margin: 0;
+  padding: 8px;
+  border-radius: 9px;
+  background: #142b27;
+}
+.rest-transition span { color: #d3e2df; font-size: 13px; line-height: 1.35; }
+.rest-transition b { font-size: 16px; }
+.rest-card .secondary { width: 100%; min-height: 44px; }
+.technique-demo { font-weight: 700; }
+.technique-videos { display: flex; flex-wrap: wrap; gap: 0 8px; margin-bottom: 4px; }
